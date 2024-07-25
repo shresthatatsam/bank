@@ -1,0 +1,465 @@
+﻿<style>
+    .number {
+        text-align: right;
+    }
+</style>
+@* 
+<div class="container"> *@
+    <h3>Forex Deal Form</h3>
+<form id="ForexForm" action="~/ForexBuySellDeals/Create" method="post" class="p-4">
+    <input type="text" class="form-control" id="edit_id" name="edit_id" hidden>
+
+    <!-- Row: Counter Party Dealer -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Counter Party Dealer</h5>
+        </div>
+        <div class="col-md-9">
+            <input type="text" class="form-control" id="counter_party_dealer_name" name="counter_party_dealer_name" placeholder="Enter Counter Party">
+        </div>
+    </div>
+
+    <!-- Row: Our Dealer Name -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Our Dealer Name</h5>
+        </div>
+        <div class="col-md-9">
+            <input type="text" class="form-control" id="our_dealer_name" name="our_dealer_name" placeholder="Enter Our Dealer">
+        </div>
+    </div>
+
+    <!-- Row: Buyer Currency Amount -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Buyer Currency Amount</h5>
+        </div>
+        <div class="col-md-9">
+            <input type="text" class="form-control number" id="buyer_currency_amount" name="buyer_currency_amount" placeholder="Enter Buyer Currency Amount">
+        </div>
+    </div>
+
+    <!-- Row: Seller Currency Amount -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Seller Currency Amount</h5>
+        </div>
+        <div class="col-md-9">
+            <input type="text" class="form-control number" id="seller_currency_amount" name="seller_currency_amount" placeholder="Enter Seller Currency Amount">
+        </div>
+    </div>
+
+    <!-- Row: Exchange Rate -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Exchange Rate</h5>
+        </div>
+        <div class="col-md-9">
+            <input type="text" class="form-control number" id="exchange_rate" name="exchange_rate" placeholder="Enter Exchange Rate">
+        </div>
+    </div>
+
+    <!-- Row: Buyer Bank -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Buyer Bank</h5>
+        </div>
+        <div class="col-md-9">
+            <select id="buyer_banker_id" name="buyer_banker_id" class="form-control" onchange="handleBuyerBankChange(this)">
+                @foreach (var item in ViewBag.BankDetailsItems)
+                {
+                    <option value="@item.bank_id" data-currency-id="@item.currency_id" data-currency-name="@item.currency_name">@item.bank_name (@item.currency_name)</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <!-- Row: Seller Bank -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Seller Bank</h5>
+        </div>
+        <div class="col-md-9">
+            <select id="seller_banker_id" name="seller_banker_id" class="form-control" onchange="handleSellerBankChange(this)">
+                @foreach (var item in ViewBag.BankDetailsItems)
+                {
+                    <option value="@item.bank_id" data-currency-id="@item.currency_id" data-currency-name="@item.currency_name">@item.bank_name (@item.currency_name)</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <!-- Row: Buyer Send Bank -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Buyer Send Bank</h5>
+        </div>
+        <div class="col-md-9">
+            <select id="buyer_send_bank_id" name="buyer_send_bank_id" class="form-control">
+                @foreach (var item in ViewBag.BankDetailsItems)
+                {
+                    <option value="@item.bank_id">@item.bank_name (@item.currency_name)</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <!-- Row: Deal Date Time -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Deal Date Time</h5>
+        </div>
+        <div class="col-md-9">
+            <input type="datetime-local" class="form-control" id="deal_date_time" name="deal_date_time">
+        </div>
+    </div>
+
+    <!-- Row: Value Date Time -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Value Date Time</h5>
+        </div>
+        <div class="col-md-9">
+            <input type="datetime-local" class="form-control" id="value_date_time" name="value_date_time">
+        </div>
+    </div>
+
+    <!-- Row: Mid Office Date Time -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Mid Office Date Time</h5>
+        </div>
+        <div class="col-md-9">
+            <input type="datetime-local" class="form-control" id="mid_office_date_time" name="mid_office_date_time">
+        </div>
+    </div>
+
+    <!-- Row: Dealer -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Dealer</h5>
+        </div>
+        <div class="col-md-9">
+            <select id="dealer_id" name="dealer_id" class="form-control">
+                @foreach (var item in ViewBag.dealerItems)
+                {
+                    <option value="@item.dealer_id">@item.dealer_name</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <!-- Row: Fiscal Year -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Fiscal Year</h5>
+        </div>
+        <div class="col-md-9">
+            <select id="fiscal_year_id" name="fiscal_year_id" class="form-control">
+                @foreach (var item in ViewBag.fiscalyearItems)
+                {
+                    <option value="@item.fiscal_year_id">@item.fs_code</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <!-- Row: Party -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Party</h5>
+        </div>
+        <div class="col-md-9">
+            <select id="party_id" name="party_id" class="form-control">
+                @foreach (var item in ViewBag.PartyItems)
+                {
+                    <option value="@item.party_id">@item.party_name</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <!-- Row: Back Office Remarks -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Back Office Remarks</h5>
+        </div>
+        <div class="col-md-9">
+            <input type="text" class="form-control" id="back_office_remarks" name="back_office_remarks" placeholder="Enter Back Office Remarks">
+        </div>
+    </div>
+
+    <!-- Row: Buyer Currency -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Buyer Currency</h5>
+        </div>
+        <div class="col-md-9">
+            <input type="text" class="form-control" id="buyer_currency_name">
+            <input type="text" id="buyer_currency_id" name="buyer_currency_id" hidden>
+        </div>
+    </div>
+
+    <!-- Row: Seller Currency -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Seller Currency</h5>
+        </div>
+        <div class="col-md-9">
+            <input type="text" class="form-control" id="seller_currency_name">
+            <input type="text" id="seller_currency_id" name="seller_currency_id" hidden>
+        </div>
+    </div>
+
+    <!-- Row: Mode of Deal -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Mode of Deal</h5>
+        </div>
+        <div class="col-md-9">
+            <select id="mod_id" name="mod_id" class="form-control">
+                @foreach (var item in ViewBag.ModeOfDealItems)
+                {
+                    <option value="@item.mod_id">@item.deal_name</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <!-- Row: Mid Office Remarks -->
+    <div class="form-row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+            <h5>Mid Office Remarks</h5>
+        </div>
+        <div class="col-md-9">
+            <input type="text" class="form-control" id="mid_office_remarks" name="mid_office_remarks" placeholder="Enter Mid Office Remarks">
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-row">
+        <div class="col-md-12 text-right">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+</form>
+
+
+
+
+ @*    <form id="ForexForm" action="~/ForexBuySellDeals/Create" method="post">
+    <input type="text" class="form-control" id="edit_id" name="edit_id" hidden>
+        <div class="form-row">
+
+            <div class="col-md-3 mb-3">
+                <label for="counter_party_dealer_name">Counter Party Dealer</label>
+                <input type="text" class="form-control" id="counter_party_dealer_name" name="counter_party_dealer_name" placeholder="Enter Counter Party">
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="our_dealer_name">Our Dealer Name</label>
+                <input type="text" class="form-control" id="our_dealer_name" name="our_dealer_name" placeholder="Enter Our Dealer">
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="buyer_currency_amount">Buyer Currency Amount</label>
+                <input type="text" class="form-control number" id="buyer_currency_amount" name="buyer_currency_amount" placeholder="Enter Buyer Currency Amount">
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="seller_currency_amount">Seller Currency Amount</label>
+                <input type="text" class="form-control number" id="seller_currency_amount" name="seller_currency_amount" placeholder="Enter Seller Currency Amount">
+            </div>
+        </div>
+
+
+
+        <!-- Row 3: Buyer Banker , Seller Banker , Buyer Send Bank  -->
+        <div class="form-row">
+
+
+            <div class="col-md-3 mb-3">
+                <label for="exchange_rate">Exchange Rate</label>
+                <input type="text" class="form-control number" id="exchange_rate" name="exchange_rate" placeholder="Enter Exchange Rate">
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label for="buyer_banker_id">Buyer Bank </label>
+                <select id="buyer_banker_id" name="buyer_banker_id" class="form-control" onchange="handleBuyerBankChange(this)">
+                    @foreach (var item in ViewBag.BankDetailsItems)
+                    {
+                        <option value="@item.bank_id" data-currency-id="@item.currency_id" data-currency-name="@item.currency_name">@item.bank_name (@item.currency_name)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="seller_banker_id">Seller Bank </label>
+                <select id="seller_banker_id" name="seller_banker_id" class="form-control" onchange="handleSellerBankChange(this)">
+                    @foreach (var item in ViewBag.BankDetailsItems)
+                    {
+                        <option value="@item.bank_id" data-currency-id="@item.currency_id" data-currency-name="@item.currency_name">@item.bank_name (@item.currency_name)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="buyer_send_bank_id">Buyer Send Bank </label>
+                <select id="buyer_send_bank_id" name="buyer_send_bank_id" class="form-control">
+                    @foreach (var item in ViewBag.BankDetailsItems)
+                    {
+                        <option value="@item.bank_id">@item.bank_name (@item.currency_name)</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+
+
+        <!-- Row 5: Deal Date Time, Value Date Time -->
+        <div class="form-row">
+            <div class="col-md-3 mb-3">
+                <label for="deal_date_time">Deal Date Time</label>
+                <input type="datetime-local" class="form-control" id="deal_date_time" name="deal_date_time">
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="value_date_time">Value Date Time</label>
+                <input type="datetime-local" class="form-control" id="value_date_time" name="value_date_time">
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="mid_office_date_time">Mid Office Date Time</label>
+                <input type="datetime-local" class="form-control" id="mid_office_date_time" name="mid_office_date_time">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="dealerId">Dealer </label>
+
+                <select id="dealer_id" name="dealer_id" class="form-control">
+                    @foreach (var item in ViewBag.dealerItems)
+                    {
+                        <option value="@item.dealer_id">@item.dealer_name</option>
+                    }
+                </select>
+
+            </div>
+        </div>
+
+        <!-- Row 6: Mid Office ID, Mid Office Signature, Mid Office Date Time, Mid Office Remarks -->
+
+
+
+
+        <div class="form-row">
+
+            <div class="form-group col-md-3">
+                <label for="fiscalYearId">Fiscal Year </label>
+                <select id="fiscal_year_id" name="fiscal_year_id" class="form-control">
+                    @foreach (var item in ViewBag.fiscalyearItems)
+                    {
+                        <option value="@item.fiscal_year_id">@item.fs_code</option>
+                    }
+                </select>
+
+            </div>
+            <div class="form-group col-md-3">
+                <label for="partyId">Party </label>
+                <select id="party_id" name="party_id" class="form-control">
+                    @foreach (var item in ViewBag.PartyItems)
+                    {
+                        <option value="@item.party_id">@item.party_name</option>
+                    }
+                </select>
+
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label for="back_office_remarks">Back Office Remarks</label>
+                <input type="text" class="form-control" id="back_office_remarks" name="back_office_remarks" placeholder="Enter Back Office Remarks">
+            </div>
+
+            <div class="form-group col-md-3">
+                <label for="buyerCurrencyId">Buyer Currency </label>
+
+
+                <input type="text" class="form-control" id="buyer_currency_name">
+                <input type="text" id="buyer_currency_id" name="buyer_currency_id" hidden>
+
+            </div>
+        </div>
+
+        <!-- Row 2: Buyer Currency , Seller Currency , Mode of Deal  -->
+        <div class="form-row">
+
+            <div class="form-group col-md-3">
+                <label for="sellerCurrencyId">Seller Currency </label>
+
+                <input type="text" class="form-control" id="seller_currency_name">
+
+                <input type="text" id="seller_currency_id" name="seller_currency_id" hidden>
+
+            </div>
+            <div class="form-group col-md-3">
+
+                <label for="modId">Mode of Deal </label>
+                <select id="mod_id" name="mod_id" class="form-control">
+                    @foreach (var item in ViewBag.ModeOfDealItems)
+                    {
+                        <option value="@item.mod_id">@item.deal_name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="mid_office_remarks">Mid Office Remarks</label>
+                <input type="text" class="form-control" id="mid_office_remarks" name="mid_office_remarks" placeholder="Enter Mid Office Remarks">
+            </div>
+        </div>
+
+
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary float-right">Submit</button>
+    </form>
+ *@
+
+
+
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var inputs = document.querySelectorAll('.number');
+
+        inputs.forEach(function (input) {
+            input.addEventListener('keypress', function (event) {
+                var key = event.key;
+
+                // Allow only numbers and .
+                if (isNaN(key) && key !== '.') {
+                    event.preventDefault();
+                }
+            });
+        });
+    });
+
+
+    function handleBuyerBankChange(selectElement) {
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+
+        var currencyId = selectedOption.getAttribute('data-currency-id');
+        var currencyName = selectedOption.getAttribute('data-currency-name');
+
+        document.getElementById('buyer_currency_id').value = currencyId;
+
+        document.getElementById('buyer_currency_name').value = currencyName;
+
+    }
+    function handleSellerBankChange(selectElement) {
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+
+        var currencyId = selectedOption.getAttribute('data-currency-id');
+        var currencyName = selectedOption.getAttribute('data-currency-name');
+        console.log(currencyId);
+        $("#seller_currency_id").val(currencyId);
+        $("#seller_currency_name").val(currencyName);
+        // document.getElementById('seller_currency_id').value = currencyId;
+
+        // document.getElementById('seller_currency_name').value = currencyName;
+
+    }
+</script>
+
+

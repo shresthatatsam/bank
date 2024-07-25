@@ -1,0 +1,187 @@
+﻿<style>
+    .table th {
+         padding: 0rem; 
+         margin-left:20px;
+    }
+
+
+</style>
+
+<div class="row p-2">
+    <div class="col-md-6">
+        <h2>Forex Buy Sale</h2>
+    </div>
+    <div class="col-md-6 text-md-right">
+        <button class="btn btn-primary" style="float:right" id="dealerMod" data-toggle="modal" data-target="#dealerModal">
+            Create
+        </button>
+    </div>
+
+</div>
+
+
+
+
+
+<div class="modal fade" id="dealerModal" tabindex="-1" role="dialog" aria-labelledby="dealerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content ">
+      
+            <div class="modal-body">
+            
+                
+            @Html.Partial("CreateIndex.cshtml")
+            </div>
+           
+        </div>
+    </div>
+</div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>Dealer Name</th>
+            <th>Out Dealer Name</th>
+
+            <th>Buyer Currency Amount</th>
+            <th>Seller Currency Amount</th>
+
+            <th>Exchange Rate</th>
+            <th>Authorized By</th>
+            <th>Mid Office Authorized By</th>
+            <th>Back Office Authorized By</th>
+            <th>Authorize</th>
+         
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var forexbutselldeals in Model)
+        {
+            <tr>
+
+                <td>@forexbutselldeals.counter_party_dealer_name</td>
+                <td>@forexbutselldeals.our_dealer_name</td>
+                <td>@forexbutselldeals.buyer_currency_amount</td>
+                <td>@forexbutselldeals.seller_currency_amount</td>
+                <td>@forexbutselldeals.exchange_rate</td>
+                <td>@forexbutselldeals.authorized_name</td>
+                <td>@forexbutselldeals.mid_authorized_name</td>
+                <td>@forexbutselldeals.back_authorized_name</td>
+                <td><button class="btn btn-primary authorize" data-id="@forexbutselldeals.forex_id" >Verify</button></td>
+          
+                <td>
+                    <button class="btn btn-primary EditParty" data-id="@forexbutselldeals.forex_id">Edit</button>
+                    <button class="btn btn-danger DeleteParty" data-id="@forexbutselldeals.forex_id">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+
+
+      
+
+
+    $(document).ready(function () {
+
+        $(document).on("click", ".authorize", function () {
+            var id = $(this).attr("data-id");
+            $.ajax({
+                url: '@Url.Action("updateAuthorizer", "ForexBuySellDeals")',
+                type: 'POST',
+                dataType: 'json',
+                data: { id: id },
+                success: function (data) {
+                    // Handle the success response here
+                    console.log(data);
+                },
+                error: function () {
+                    alert('Error fetching party details.');
+                }
+            });
+        });
+
+
+  
+
+
+        $(document).on("click", ".EditParty", function () {
+            var id = $(this).attr("data-id");
+            $.ajax({
+                  
+                url: '/ForexBuySellDeals/getalldata',
+                type: 'GET',
+                dataType: 'json',
+                data: { id: id },
+                success: function (data) {
+                  
+                    console.log(data);
+                    $("#edit_id").val(id);
+                    $("#counter_party_dealer_name").val(data[0].counter_party_dealer_name);
+                    $("#our_dealer_name").val(data[0].our_dealer_name);
+                    $("#buyer_currency_amount").val(data[0].buyer_currency_amount);
+                    $("#seller_currency_amount").val(data[0].seller_currency_amount);
+                    $("#exchange_rate").val(data[0].exchange_rate);
+                    $("#seller_banker_id").val(data[0].seller_banker_id);
+                    $("#buyer_banker_id").val(data[0].buyer_banker_id);
+                    $("#buyer_send_bank_id").val(data[0].buyer_send_bank_id);
+
+                    $("#fiscal_year_id").val(data[0].fiscal_year_id);
+                    $("#party_id").val(data[0].party_id);
+                    $("#back_office_remarks").val(data[0].back_office_remarks);
+                    $("#mid_office_remarks").val(data[0].mid_office_remarks);
+
+                    $("#mod_id").val(data[0].mod_id);
+
+                    $("#dealer_id").val(data[0].dealer_id);
+                    
+
+                    
+
+                    var dealDateTime = new Date(data[0].deal_date_time).toISOString().slice(0, 16);
+                    var midOfficeDateTime = new Date(data[0].mid_office_date_time).toISOString().slice(0, 16);
+                    var value_date_time = new Date(data[0].value_date_time).toISOString().slice(0, 16);
+                    $("#deal_date_time").val(dealDateTime).change();
+                    $("#mid_office_date_time").val(midOfficeDateTime).change();
+                    $("#value_date_time").val(value_date_time).change();
+                    $('#dealerModal').modal('show');
+                },
+                error: function () {
+                    alert('Error fetching party details.');
+                }
+            });
+
+        });
+
+        $(document).on("click", ".DeleteParty", function () {
+            var id = $(this).attr("data-id");
+            $.ajax({
+                url: "@Url.Action("Delete", "Dealer")",
+                method: 'POST',
+                dataType: 'json',
+                data: { id: id },
+                success: function (data) {
+                    location.reload(true);
+                    console.log('Edit success:', data);
+
+                },
+
+                error: function (xhr, status, error) {
+                    console.error('Error editing data:', error);
+                }
+            });
+        });
+
+    });
+</script>
+

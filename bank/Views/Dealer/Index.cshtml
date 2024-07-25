@@ -1,0 +1,116 @@
+﻿
+<div class="row p-2">
+    <div class="col-md-6">
+        <h2>Dealer</h2>
+    </div>
+    <div class="col-md-6 text-md-right">
+        <button class="btn btn-primary" style="float:right" id="dealerMod" data-toggle="modal" data-target="#dealerModal">
+            Create
+        </button>
+    </div>
+
+</div>
+
+ <table class="table">
+    <thead>
+        <tr>
+            <th>party Name</th>
+            <th>Dealer Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var dealers in Model)
+        {
+            <tr>
+                <td>@dealers.party_name</td>
+                <td>@dealers.dealer_name</td>
+                <td>
+                    <button class="btn btn-primary EditParty" data-id="@dealers.dealer_id">Edit</button>
+                    <button class="btn btn-danger DeleteParty" data-id="@dealers.dealer_id">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> 
+
+
+<div class="modal fade" id="dealerModal" tabindex="-1" role="dialog" aria-labelledby="dealerMod" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="dealerModal">Create New Party</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form id="partyForm" action="~/Dealer/Create" method="post">
+                    <div class="form-group">
+
+                        <input type="text" class="form-control" id="edit_id" name="edit_id" hidden>
+
+                        dealer Name
+                        <input type="text" class="form-control" id="dealer_name" name="dealer_name">
+
+                    </div>
+
+                    <div class="form-group">
+
+                        Party Name
+                        <select id="party_name" name="party_name" class="form-control">
+                            @foreach (var item in ViewBag.PartyItems)
+                            {
+                                <option value="@item.party_id">@item.party_name</option>
+                            }
+                        </select>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="saveGroupBtn">Save</button>
+                    </div>
+                </form>
+            </div>
+            <!-- Modal Footer -->
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(document).on("click", ".EditParty", function () {
+            var id = $(this).attr("data-id");
+            $("#edit_id").val(id);
+            $('#dealerModal').modal('show');
+        });
+
+        $(document).on("click", ".DeleteParty", function () {
+            var id = $(this).attr("data-id");
+            $.ajax({
+                url: "@Url.Action("Delete", "Dealer")",
+                method: 'POST',
+                dataType: 'json',
+                data: { id: id },
+                success: function (data) {
+                    location.reload(true);
+                    console.log('Edit success:', data);
+
+                },
+
+                error: function (xhr, status, error) {
+                    console.error('Error editing data:', error);
+                }
+            });
+        });
+
+    });
+</script>
